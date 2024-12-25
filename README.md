@@ -25,7 +25,10 @@ To deploy the function using Azure Cloud Shell, follow these steps:
 2. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/azurefunction-pgp.git
+    git clone https://github.com/wheetazlab/azurefunction-pgp.git
+    ``` 
+    **(create a new repo in your org and copy this there)**
+    ```
     cd azurefunction-pgp
     ```
 
