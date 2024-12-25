@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+      "name": "blob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "path": "<your_container_name>/{name}",
+      "connection": "STORAGE_A_CONNECTION_STRING"
+    }
+  ]
+}
