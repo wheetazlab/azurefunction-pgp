@@ -45,11 +45,46 @@ To deploy the function using Azure Cloud Shell, follow these steps:
 
 This script will:
 
-- Create a resource group.
-- Create a storage account.
-- Create a function app.
-- Assign a system-assigned managed identity to the function app.
+- Create a resource group if it does not already exist.
+- Create a storage account for the function app if it does not already exist.
+- Create Storage Account "DST" if it does not already exist.
+- Create a Key Vault if it does not already exist.
+- Create a function app if it does not already exist.
+- Assign a system-assigned managed identity to the function app if it is not already assigned.
 - Grant the managed identity access to Storage Account "SRC", Storage Account "DST", and the Key Vault.
 - Deploy the function app code to the specified Azure Function App.
 
 Make sure to replace the placeholders in the `deploy.sh` script with your actual values before running it.
+
+## Removal Instructions
+
+To remove the deployed resources using Azure Cloud Shell, follow these steps:
+
+1. Open the Azure Cloud Shell.
+2. Navigate to the repository directory:
+
+    ```bash
+    cd azurefunction-pgp
+    ```
+
+3. Make the removal script executable:
+
+    ```bash
+    chmod +x remove.sh
+    ```
+
+4. Run the removal script:
+
+    ```bash
+    ./remove.sh
+    ```
+
+This script will:
+
+- Remove the function app.
+- Remove the storage account for the function app.
+- Remove Storage Account "DST".
+- Remove the Key Vault if it is empty.
+- Remove the resource group if it is empty.
+
+Make sure to replace the placeholders in the `remove.sh` script with your actual values before running it.
