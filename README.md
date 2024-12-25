@@ -1,31 +1,21 @@
 # azurefunction-pgp
 
-This Azure Function is triggered when a file is dropped into a blob in Storage Account "A". The file is then decrypted using PGP with a key stored in Azure Key Vault. Once decrypted, the file is dumped into Storage Account "B".
+This Azure Function is triggered when a file is dropped into a blob in Storage Account "SRC". The file is then decrypted using PGP with a key stored in Azure Key Vault. Once decrypted, the file is dumped into Storage Account "DST".
 
-## Setup Instructions
+## Prerequisites
 
-1. Create an Azure Function App.
-2. Configure the Function App to use a Blob Storage trigger.
-3. Set up Azure Key Vault and store your PGP key.
-4. **Update the variables in `deploy.sh` and `local.settings.json` with your actual values.**
-5. Configure the Function App to access the Key Vault.
-6. Deploy the Azure Function code.
+Before deploying the function, ensure the following secrets exist in your Azure Key Vault:
 
-## Requirements
-
-- Azure Function App
-- Azure Storage Account "A"
-- Azure Storage Account "B"
-- Azure Key Vault
-- PGP key stored in Azure Key Vault
+1. **SRC Connection String**: The connection string for Storage Account "SRC" must be stored as a secret in the Key Vault.
+2. **PGP Key**: The PGP key must be stored as a secret in the Key Vault.
 
 ## Function Code
 
 The function code is written in Python and performs the following steps:
-1. Triggered by a new blob in Storage Account "A".
+1. Triggered by a new blob in Storage Account "SRC".
 2. Retrieves the PGP key from Azure Key Vault.
 3. Decrypts the blob using the PGP key.
-4. Uploads the decrypted file to Storage Account "B".
+4. Uploads the decrypted file to Storage Account "DST".
 
 ## Deployment Instructions
 
@@ -59,7 +49,7 @@ This script will:
 - Create a storage account.
 - Create a function app.
 - Assign a system-assigned managed identity to the function app.
-- Grant the managed identity access to Storage Account "A", Storage Account "B", and the Key Vault.
+- Grant the managed identity access to Storage Account "SRC", Storage Account "DST", and the Key Vault.
 - Deploy the function app code to the specified Azure Function App.
 
 Make sure to replace the placeholders in the `deploy.sh` script with your actual values before running it.

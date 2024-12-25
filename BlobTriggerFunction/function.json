@@ -1,0 +1,23 @@
+{
+  "bindings": [
+    {
+      "name": "blob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "path": "<your_container_name>/{name}",
+      "connection": "STORAGE_SRC_CONNECTION_STRING"
+    }
+  ],
+  "connectionFromKeyVault": [
+    {
+      "name": "STORAGE_SRC_CONNECTION_STRING",
+      "vaultName": "<your_key_vault_name>",
+      "secretName": "<your_secret_name>"
+    },
+    {
+      "name": "PGP_KEY_SECRET",
+      "vaultName": "<your_key_vault_name>",
+      "secretName": "<your_pgp_key_secret_name>"
+    }
+  ]
+}

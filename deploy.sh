@@ -3,10 +3,9 @@
 # Variables
 RESOURCE_GROUP="myResourceGroup"
 LOCATION="<your_location>"
-STORAGE_ACCOUNT_NAME="<your_storage_account_name>"
+FUNCTION_STORAGE_ACCOUNT_NAME="<your_function_storage_account_name>"
 FUNCTION_APP_NAME="<your_function_app_name>"
-STORAGE_ACCOUNT_A_NAME="<storage_account_a_name>"
-STORAGE_ACCOUNT_B_NAME="<your_storage_b_account_name>"
+STORAGE_ACCOUNT_DST_NAME="<your_storage_account_dst_name>"
 KEY_VAULT_NAME="<your_key_vault_name>"
 SUBSCRIPTION_ID="<your_subscription_id>"
 
@@ -18,15 +17,20 @@ else
   echo "Resource group $RESOURCE_GROUP already exists"
 fi
 
-# Create a storage account
-az storage account create --name $STORAGE_ACCOUNT_NAME --location $LOCATION --resource-group $RESOURCE_GROUP --sku Standard_LRS
-
-# Check if Storage Account B exists
-if ! az storage account show --name $STORAGE_ACCOUNT_B_NAME --resource-group $RESOURCE_GROUP &> /dev/null; then
-  echo "Creating storage account B: $STORAGE_ACCOUNT_B_NAME"
-  az storage account create --name $STORAGE_ACCOUNT_B_NAME --location $LOCATION --resource-group $RESOURCE_GROUP --sku Standard_LRS
+# Check if the storage account for the function app exists
+if ! az storage account show --name $FUNCTION_STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP &> /dev/null; then
+  echo "Creating storage account for the function app: $FUNCTION_STORAGE_ACCOUNT_NAME"
+  az storage account create --name $FUNCTION_STORAGE_ACCOUNT_NAME --location $LOCATION --resource-group $RESOURCE_GROUP --sku Standard_LRS
 else
-  echo "Storage account B $STORAGE_ACCOUNT_B_NAME already exists"
+  echo "Storage account $FUNCTION_STORAGE_ACCOUNT_NAME already exists"
+fi
+
+# Check if Storage Account DST exists
+if ! az storage account show --name $STORAGE_ACCOUNT_DST_NAME --resource-group $RESOURCE_GROUP &> /dev/null; then
+  echo "Creating storage account DST: $STORAGE_ACCOUNT_DST_NAME"
+  az storage account create --name $STORAGE_ACCOUNT_DST_NAME --location $LOCATION --resource-group $RESOURCE_GROUP --sku Standard_LRS
+else
+  echo "Storage account DST $STORAGE_ACCOUNT_DST_NAME already exists"
 fi
 
 # Check if Key Vault exists
@@ -37,23 +41,40 @@ else
   echo "Key Vault $KEY_VAULT_NAME already exists"
 fi
 
-# Create a function app
-az functionapp create --resource-group $RESOURCE_GROUP --consumption-plan-location $LOCATION --runtime python --functions-version 3 --name $FUNCTION_APP_NAME --storage-account $STORAGE_ACCOUNT_NAME
+# Check if the function app exists
+if ! az functionapp show --name $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP &> /dev/null; then
+  echo "Creating function app: $FUNCTION_APP_NAME"
+  az functionapp create --resource-group $RESOURCE_GROUP --consumption-plan-location $LOCATION --runtime python --functions-version 3 --name $FUNCTION_APP_NAME --storage-account $FUNCTION_STORAGE_ACCOUNT_NAME
+else
+  echo "Function app $FUNCTION_APP_NAME already exists"
+fi
 
-# Assign a system-assigned managed identity to the function app
-az functionapp identity assign --name $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP
+# Check if the managed identity is already assigned
+if ! az functionapp identity show --name $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP --query principalId &> /dev/null; then
+  echo "Assigning managed identity to function app: $FUNCTION_APP_NAME"
+  az functionapp identity assign --name $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP
+else
+  echo "Managed identity already assigned to function app $FUNCTION_APP_NAME"
+fi
 
 # Get the managed identity principal ID
 PRINCIPAL_ID=$(az functionapp identity show --name $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP --query principalId --output tsv)
 
-# Grant access to Storage Account A
-az role assignment create --assignee $PRINCIPAL_ID --role "Storage Blob Data Contributor" --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_A_NAME
+# Check if the role assignment for Storage Account DST already exists
+if ! az role assignment list --assignee $PRINCIPAL_ID --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_DST_NAME --query [].roleDefinitionName | grep -q "Storage Blob Data Contributor"; then
+  echo "Granting access to Storage Account DST"
+  az role assignment create --assignee $PRINCIPAL_ID --role "Storage Blob Data Contributor" --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_DST_NAME
+else
+  echo "Role assignment for Storage Account DST already exists"
+fi
 
-# Grant access to Storage Account B
-az role assignment create --assignee $PRINCIPAL_ID --role "Storage Blob Data Contributor" --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_B_NAME
-
-# Grant access to Key Vault
-az keyvault set-policy --name $KEY_VAULT_NAME --object-id $PRINCIPAL_ID --secret-permissions get
+# Check if the Key Vault assignment already exists
+if ! az keyvault show --name $KEY_VAULT_NAME --resource-group $RESOURCE_GROUP --query properties.accessPolicies[].objectId | grep -q $PRINCIPAL_ID; then
+  echo "Granting access to Key Vault"
+  az keyvault set-policy --name $KEY_VAULT_NAME --object-id $PRINCIPAL_ID --secret-permissions get
+else
+  echo "Key Vault assignment already exists"
+fi
 
 # Navigate to the function app directory
 cd /root/azurefunction-pgp
