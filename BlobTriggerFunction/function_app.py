@@ -13,7 +13,7 @@ def main(blob: func.InputStream):
     credential = ManagedIdentityCredential()
 
     # Retrieve PGP key from environment variable
-    pgp_key_secret = os.getenv("PGP_KEY_SECRET")
+    pgp_key = os.getenv("PGP_KEY_SECRET")
 
     # Initialize BlobServiceClient for Storage Account DST
     blob_service_client_dst = BlobServiceClient(account_url=os.getenv("STORAGE_DST_ACCOUNT_URL"), credential=credential)
@@ -21,10 +21,11 @@ def main(blob: func.InputStream):
 
     # Initialize GPG
     gpg = gnupg.GPG()
-    gpg.import_keys(pgp_key_secret)
+    gpg.import_keys(pgp_key)
 
     # Decrypt the blob
-    decrypted_data = gpg.decrypt(blob.read())
+    pgp_message = blob.read()
+    decrypted_data = gpg.decrypt(pgp_message)
 
     if not decrypted_data.ok:
         logging.error("Decryption failed")
