@@ -1,13 +1,14 @@
 {
   "bindings": [
     {
-      "name": "blob",
+      "name": "TriggerMetadata",
       "type": "blobTrigger",
       "direction": "in",
-      "path": "<your_container_name>/{name}",
+      "path": "data/TenncareDEP/Data/Raw/Edison/{name}.xlsx",
       "connection": "STORAGE_SRC_CONNECTION_STRING"
     }
   ],
+  "scriptFile": "function_app.ps1",
   "connectionFromKeyVault": [
     {
       "name": "STORAGE_SRC_CONNECTION_STRING",

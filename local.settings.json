@@ -2,7 +2,7 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "FUNCTIONS_WORKER_RUNTIME": "powershell",
     "STORAGE_SRC_CONNECTION_STRING_SECRET_NAME": "<your_storage_src_connection_string_secret_name>",
     "STORAGE_DST_ACCOUNT_URL": "<your_storage_dst_account_url>",
     "STORAGE_DST_CONTAINER_NAME": "<your_storage_dst_container_name>",
