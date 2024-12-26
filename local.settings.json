@@ -8,6 +8,7 @@
     "STORAGE_DST_CONTAINER_NAME": "<your_storage_dst_container_name>",
     "KEY_VAULT_URL": "<your_key_vault_url>",
     "PGP_KEY_SECRET_NAME": "<your_pgp_key_secret_name>",
-    "STORAGE_SRC_CONNECTION_STRING": "<your_storage_src_connection_string>"
+    "STORAGE_SRC_CONNECTION_STRING": "<your_storage_src_connection_string>",
+    "PGP_KEY_PASSPHRASE": "<your_pgp_key_passphrase>"
   }
 }
