@@ -1,6 +1,6 @@
 param($TriggerMetadata)
 
-Write-Host "Processing blob: $($TriggerMetadata.Name)"
+Write-Output "Processing blob: $($TriggerMetadata.Name)"
 
 # Retrieve environment variables
 $pgpKey = $env:PGP_KEY_SECRET
@@ -40,7 +40,7 @@ if ($gpg.ExitCode -ne 0) {
     exit 1
 }
 
-Write-Host "PGP key imported successfully"
+Write-Output "PGP key imported successfully"
 
 # Decrypt the blob
 $pgpMessage = Get-Content -Raw -Path $TriggerMetadata.Uri
@@ -64,10 +64,10 @@ if ($gpg.ExitCode -ne 0) {
     exit 1
 }
 
-Write-Host "Decryption successful"
+Write-Output "Decryption successful"
 
 # Upload decrypted data to Storage Account DST
 $blobClientDst = $containerClientDst.GetBlockBlobReference($TriggerMetadata.Name)
 $blobClientDst.UploadText($decryptedData)
 
-Write-Host "Decrypted blob uploaded to Storage Account DST: $($TriggerMetadata.Name)"
+Write-Output "Decrypted blob uploaded to Storage Account DST: $($TriggerMetadata.Name)"
