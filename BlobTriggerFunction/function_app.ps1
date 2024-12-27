@@ -5,7 +5,6 @@ Write-Host "Processing blob: $($TriggerMetadata.Name)"
 # Retrieve environment variables
 $pgpKey = $env:PGP_KEY_SECRET
 $pgpPassphrase = $env:PGP_KEY_PASSPHRASE
-$storageSrcConnectionString = $env:STORAGE_SRC_CONNECTION_STRING
 $storageDstConnectionString = $env:STORAGE_DST_CONNECTION_STRING
 
 if (-not $pgpKey) {
@@ -17,10 +16,6 @@ if (-not $pgpPassphrase) {
     Write-Error "PGP passphrase not found in environment variables"
     exit 1
 }
-
-# Initialize BlobServiceClient for Storage Account SRC
-$blobServiceClientSrc = [Microsoft.Azure.Storage.Blob.CloudBlobClient]::new($storageSrcConnectionString)
-$containerClientSrc = $blobServiceClientSrc.GetContainerReference($TriggerMetadata.ContainerName)
 
 # Initialize BlobServiceClient for Storage Account DST
 $blobServiceClientDst = [Microsoft.Azure.Storage.Blob.CloudBlobClient]::new($storageDstConnectionString)

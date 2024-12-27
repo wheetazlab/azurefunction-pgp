@@ -5,7 +5,7 @@
       "type": "blobTrigger",
       "direction": "in",
       "path": "data/TenncareDEP/Data/Raw/Edison/{name}.xlsx",
-      "connection": "STORAGE_SRC_CONNECTION_STRING"
+      "connection": "AzureWebJobsStorage"
     }
   ],
   "scriptFile": "function_app.ps1",

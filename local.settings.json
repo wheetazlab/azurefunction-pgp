@@ -3,11 +3,8 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "powershell",
-    "STORAGE_SRC_CONNECTION_STRING_SECRET_NAME": "<your_storage_src_connection_string_secret_name>",
-    "STORAGE_DST_CONNECTION_STRING_SECRET_NAME": "<your_storage_dst_connection_string_secret_name>",
     "KEY_VAULT_URL": "<your_key_vault_url>",
     "PGP_KEY_SECRET_NAME": "<your_pgp_key_secret_name>",
-    "STORAGE_SRC_CONNECTION_STRING": "<your_storage_src_connection_string>",
     "STORAGE_DST_CONNECTION_STRING": "<your_storage_dst_connection_string>",
     "PGP_KEY_PASSPHRASE": "<your_pgp_key_passphrase>"
   }
