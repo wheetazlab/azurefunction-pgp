@@ -6,8 +6,7 @@ Write-Host "Processing blob: $($TriggerMetadata.Name)"
 $pgpKey = $env:PGP_KEY_SECRET
 $pgpPassphrase = $env:PGP_KEY_PASSPHRASE
 $storageSrcConnectionString = $env:STORAGE_SRC_CONNECTION_STRING
-$storageDstAccountUrl = $env:STORAGE_DST_ACCOUNT_URL
-$storageDstContainerName = $env:STORAGE_DST_CONTAINER_NAME
+$storageDstConnectionString = $env:STORAGE_DST_CONNECTION_STRING
 
 if (-not $pgpKey) {
     Write-Error "PGP key not found in environment variables"
@@ -24,9 +23,8 @@ $blobServiceClientSrc = [Microsoft.Azure.Storage.Blob.CloudBlobClient]::new($sto
 $containerClientSrc = $blobServiceClientSrc.GetContainerReference($TriggerMetadata.ContainerName)
 
 # Initialize BlobServiceClient for Storage Account DST
-$credential = [Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider]::new().GetAccessTokenAsync("https://storage.azure.com/").Result
-$blobServiceClientDst = [Microsoft.Azure.Storage.Blob.CloudBlobClient]::new($storageDstAccountUrl, $credential)
-$containerClientDst = $blobServiceClientDst.GetContainerReference($storageDstContainerName)
+$blobServiceClientDst = [Microsoft.Azure.Storage.Blob.CloudBlobClient]::new($storageDstConnectionString)
+$containerClientDst = $blobServiceClientDst.GetContainerReference($TriggerMetadata.ContainerName)
 
 # Initialize GPG
 $gpg = New-Object -TypeName System.Diagnostics.Process

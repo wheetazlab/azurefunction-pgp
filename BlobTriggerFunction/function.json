@@ -11,11 +11,6 @@
   "scriptFile": "function_app.ps1",
   "connectionFromKeyVault": [
     {
-      "name": "STORAGE_SRC_CONNECTION_STRING",
-      "vaultName": "<your_key_vault_name>",
-      "secretName": "<your_storage_src_connection_string_secret_name>"
-    },
-    {
       "name": "PGP_KEY_SECRET",
       "vaultName": "<your_key_vault_name>",
       "secretName": "<your_pgp_key_secret_name>"
